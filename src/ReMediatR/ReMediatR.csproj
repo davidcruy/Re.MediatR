@@ -4,6 +4,15 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <PackageId>Re.MediatR</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>David Vercruyssen</Authors>
+        <Company>Aranea</Company>
+        <PackageProjectUrl>https://github.com/davidcruy/Re.MediatR</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/davidcruy/Re.MediatR.git</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <RootNamespace>ReMediatR</RootNamespace>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
 
     <ItemGroup>
