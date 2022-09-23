@@ -3,7 +3,7 @@ Re.MediatR
 
 Exposes [MediatR](https://github.com/jbogard/MediatR) trough a Web-API endpoint for SPA applications *(Angular, React, Vue, ...)*
 
-You can nog use MediatR without having to write your own API Controllers
+You can now use MediatR without having to write your own API Controllers
 
 Works with **net6.0** only at the moment
 
