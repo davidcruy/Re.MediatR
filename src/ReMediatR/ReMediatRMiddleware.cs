@@ -11,6 +11,7 @@ public class ReMediatRMiddleware
     private readonly RequestDelegate _next;
     private readonly IDictionary<string, Type> _requestTypeCache;
     private readonly ReMediatROptions _options;
+    private static JsonSerializerOptions _serializerOptions;
 
     public ReMediatRMiddleware(RequestDelegate next, IOptions<ReMediatROptions> options)
     {
@@ -42,22 +43,16 @@ public class ReMediatRMiddleware
                 var req = context.Request.Body;
 
                 var requestType = _requestTypeCache[type];
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-                dynamic? request = await JsonSerializer.DeserializeAsync(req, requestType, options, context.RequestAborted);
+                var options = EnsureOptions();
+
+                var request = await JsonSerializer.DeserializeAsync(req, requestType, options, context.RequestAborted);
                 if (request == null)
                 {
                     throw new Exception($"Request deserialization returned NULL for type '{type}'.");
                 }
 
                 var response = await mediator.Send(request);
-                var responseJson = JsonSerializer.Serialize(response, new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    WriteIndented = true
-                });
+                var responseJson = JsonSerializer.Serialize(response, options);
 
                 await HttpResponseWritingExtensions.WriteAsync(context.Response, responseJson, context.RequestAborted);
                 return;
@@ -65,5 +60,20 @@ public class ReMediatRMiddleware
         }
 
         await _next(context);
+    }
+
+    private static JsonSerializerOptions EnsureOptions()
+    {
+        if (_serializerOptions != null)
+            return _serializerOptions;
+        
+        _serializerOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+
+        return _serializerOptions;
     }
 }

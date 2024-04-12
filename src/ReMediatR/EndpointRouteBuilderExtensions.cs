@@ -6,7 +6,7 @@ namespace ReMediatR;
 
 public static class EndpointRouteBuilderExtensions
 {
-    public static IEndpointConventionBuilder? MapReMediatR<T>(this IEndpointRouteBuilder endpoints, string pattern)
+    public static IEndpointConventionBuilder MapReMediatR<T>(this IEndpointRouteBuilder endpoints, string pattern)
     {
         return endpoints.MapReMediatR(pattern, o =>
         {
@@ -14,7 +14,7 @@ public static class EndpointRouteBuilderExtensions
         });
     }
 
-    public static IEndpointConventionBuilder? MapReMediatR(this IEndpointRouteBuilder endpoints, string pattern, Action<IReMediatREndpointRouteBuilder>? optionsDelegate = default)
+    public static IEndpointConventionBuilder MapReMediatR(this IEndpointRouteBuilder endpoints, string pattern, Action<IReMediatREndpointRouteBuilder> optionsDelegate = default)
     {
         var customBuilder = new ReMediatREndpointRouteBuilder(endpoints, new ReMediatROptions());
         optionsDelegate?.Invoke(customBuilder);

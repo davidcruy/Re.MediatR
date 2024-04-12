@@ -8,14 +8,8 @@ public interface IReMediatREndpointRouteBuilder
     ReMediatROptions Options { get; }
 }
 
-internal class ReMediatREndpointRouteBuilder : IReMediatREndpointRouteBuilder
+internal class ReMediatREndpointRouteBuilder(IEndpointRouteBuilder builder, ReMediatROptions options) : IReMediatREndpointRouteBuilder
 {
-    public ReMediatREndpointRouteBuilder(IEndpointRouteBuilder builder, ReMediatROptions options)
-    {
-        Builder = builder;
-        Options = options;
-    }
-
-    public IEndpointRouteBuilder Builder { get; }
-    public ReMediatROptions Options { get; }
+    public IEndpointRouteBuilder Builder { get; } = builder;
+    public ReMediatROptions Options { get; } = options;
 }
