@@ -8,14 +8,8 @@ public interface IReMediatRBuilder
     ReMediatROptions Options { get; }
 }
 
-internal class ReMediatRBuilder : IReMediatRBuilder
+internal class ReMediatRBuilder(IApplicationBuilder builder, ReMediatROptions options) : IReMediatRBuilder
 {
-    public ReMediatRBuilder(IApplicationBuilder builder, ReMediatROptions options)
-    {
-        Builder = builder;
-        Options = options;
-    }
-
-    public IApplicationBuilder Builder { get; }
-    public ReMediatROptions Options { get; }
+    public IApplicationBuilder Builder { get; } = builder;
+    public ReMediatROptions Options { get; } = options;
 }

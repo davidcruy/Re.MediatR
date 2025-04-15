@@ -4,10 +4,10 @@ namespace ReMediatR;
 
 public class ReMediatROptions
 {
-    public ReMediatROptions()
-    {
-        RequestsAssembly = Assembly.GetExecutingAssembly();
-    }
+    public Assembly RequestsAssembly { get; set; } = Assembly.GetExecutingAssembly();
 
-    public Assembly RequestsAssembly { get; set; }
+    /// <summary>
+    /// Build the type-cache with the fully qualified domain name of every request that will be registered
+    /// </summary>
+    public bool IndexFullNameInTypeCache { get; set; }
 }

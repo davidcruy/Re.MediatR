@@ -24,10 +24,8 @@ Or via the .NET Core command line interface:
 Just add ReMediatR as a new endpoint during runtime configuration:
 
 ```C#
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapReMediatR<PingRequest>("/mediatr");
-});
+// Map ReMediatr with the default URL '/mediatr', register all requests in the current executing assembly
+app.MapReMediatR();
 ```
 
 Where **PingRequest** is a generic type for which ReMediatR will scan the assembly of that type
@@ -49,12 +47,7 @@ public class PingRequest : IRequest<PingResponse>
 
 public class PingResponse
 {
-    public PingResponse()
-    {
-        Time = DateTime.Now;
-    }
-
-    public DateTime Time { get; }
+    public DateTime Time { get; } = DateTime.Now;
 }
 
 public class PingRequestHandler : IRequestHandler<PingRequest, PingResponse>
@@ -81,6 +74,7 @@ Content-Type: application/json
 Response
 
 ```http
+
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: xy
@@ -88,4 +82,16 @@ Content-Length: xy
 {
   "time": "2022-02-13T15:31:55.559Z"
 }
+```
+
+### Options
+
+When setting up ReMediatR, you can change the name of the endpoint 'mediatr' to something else, and you can change additional settings.
+
+```C#
+
+app.MapReMediatR("/mediatr", o => o
+    .RequestAssembly(typeof(PingRequest).Assembly) // Provide another assembly that contains the requests
+    .IndexFullNameInTypeCache() // Index all requests with their fully qualified type name, including the namespace
+);
 ```

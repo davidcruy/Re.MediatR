@@ -9,7 +9,7 @@ namespace ReMediatR;
 public class ReMediatRMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IDictionary<string, Type> _requestTypeCache;
+    private readonly Dictionary<string, Type> _requestTypeCache;
     private readonly ReMediatROptions _options;
     private static JsonSerializerOptions _serializerOptions;
 
@@ -20,10 +20,12 @@ public class ReMediatRMiddleware
         _requestTypeCache = BuildTypeCache();
     }
 
-    private IDictionary<string, Type> BuildTypeCache()
+    private Dictionary<string, Type> BuildTypeCache()
     {
         var types = _options.RequestsAssembly.GetTypes().Where(t => t.IsAssignableToGenericType(typeof(IRequest<>)));
-        var typeCache = types.ToDictionary(t => t.FullName, t => t);
+        var typeCache = _options.IndexFullNameInTypeCache
+            ? types.ToDictionary(t => t.FullName, t => t)
+            : types.ToDictionary(t => t.Name, t => t);
 
         return typeCache;
     }
@@ -33,33 +35,36 @@ public class ReMediatRMiddleware
         if (context.Request.Method.Equals("POST"))
         {
             var type = context.Request.Query["type"];
-            if (!string.IsNullOrWhiteSpace(type))
+
+            if (string.IsNullOrWhiteSpace(type))
             {
-                if (!_requestTypeCache.ContainsKey(type))
-                {
-                    throw new Exception($"Type is not found in requests assembly: '{type}'");
-                }
-
-                var req = context.Request.Body;
-
-                var requestType = _requestTypeCache[type];
-                var options = EnsureOptions();
-
-                var request = await JsonSerializer.DeserializeAsync(req, requestType, options, context.RequestAborted);
-                if (request == null)
-                {
-                    throw new Exception($"Request deserialization returned NULL for type '{type}'.");
-                }
-
-                var response = await mediator.Send(request);
-                var responseJson = JsonSerializer.Serialize(response, options);
-
-                await HttpResponseWritingExtensions.WriteAsync(context.Response, responseJson, context.RequestAborted);
-                return;
+                throw new Exception("Type query parameter was not set");
             }
-        }
 
-        await _next(context);
+            if (!_requestTypeCache.ContainsKey(type))
+            {
+                throw new Exception($"Type is not found in requests assembly: '{type}'");
+            }
+
+            var body = context.Request.Body;
+            var requestType = _requestTypeCache[type];
+            var options = EnsureOptions();
+
+            var request = await JsonSerializer.DeserializeAsync(body, requestType, options, context.RequestAborted);
+            if (request == null)
+            {
+                throw new Exception($"Request deserialization returned NULL for type '{type}'.");
+            }
+
+            var response = await mediator.Send(request);
+            var responseJson = JsonSerializer.Serialize(response, options);
+
+            await context.Response.WriteAsync(responseJson, context.RequestAborted);
+        }
+        else
+        {
+            await _next(context);
+        }
     }
 
     private static JsonSerializerOptions EnsureOptions()

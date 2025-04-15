@@ -6,18 +6,13 @@ namespace ReMediatR;
 
 public static class EndpointRouteBuilderExtensions
 {
-    public static IEndpointConventionBuilder MapReMediatR<T>(this IEndpointRouteBuilder endpoints, string pattern)
+    /// <summary>
+    /// Map ReMediatr with the default URL '/mediatr' for an assembly of a specific type
+    /// </summary>
+    public static IEndpointConventionBuilder MapReMediatR(this IEndpointRouteBuilder endpoints, string pattern = "/mediatr", Action<IReMediatREndpointRouteBuilder> options = null)
     {
-        return endpoints.MapReMediatR(pattern, o =>
-        {
-            o.Options.RequestsAssembly = typeof(T).Assembly;
-        });
-    }
-
-    public static IEndpointConventionBuilder MapReMediatR(this IEndpointRouteBuilder endpoints, string pattern, Action<IReMediatREndpointRouteBuilder> optionsDelegate = default)
-    {
-        var customBuilder = new ReMediatREndpointRouteBuilder(endpoints, new ReMediatROptions());
-        optionsDelegate?.Invoke(customBuilder);
+        var customBuilder = new ReMediatREndpointRouteBuilder(new ReMediatROptions());
+        options?.Invoke(customBuilder);
 
         var app = endpoints.CreateApplicationBuilder();
 
