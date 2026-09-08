@@ -5,7 +5,7 @@ Exposes [MediatR](https://github.com/jbogard/MediatR) trough a Web-API endpoint 
 
 You can now use MediatR without having to write your own API Controllers
 
-Works with **net6.0** only at the moment
+Targets **net8.0**, **net9.0** and **net10.0** (MediatR 12)
 
 Just register the middleware and you can start calling MediatR from inside your favorite SPA framework
 
@@ -93,5 +93,13 @@ When setting up ReMediatR, you can change the name of the endpoint 'mediatr' to 
 app.MapReMediatR("/mediatr", o => o
     .RequestAssembly(typeof(PingRequest).Assembly) // Provide another assembly that contains the requests
     .IndexFullNameInTypeCache() // Index all requests with their fully qualified type name, including the namespace
+    .ConfigureJson(json => json.Converters.Add(new MyConverter())) // Tweak the System.Text.Json options
 );
 ```
+
+### Behaviour
+
+- Both `IRequest<TResponse>` and the non-generic `IRequest` are exposed; the latter answers `{}`.
+- JSON uses the ASP.NET Core *web* defaults (camelCase, case-insensitive, numbers may be quoted) with indented output; adjust via `ConfigureJson`.
+- A missing or unknown `type` answers `400 Bad Request`. Exceptions thrown by handlers are not translated — map them in your own middleware (e.g. `UnauthorizedAccessException` → 401/403).
+- Authorization is the host's job: chain `.RequireAuthorization()` on the returned endpoint builder and/or enforce per-request rules in a MediatR pipeline behavior.
