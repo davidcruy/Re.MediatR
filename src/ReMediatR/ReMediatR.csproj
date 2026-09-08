@@ -1,20 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>default</LangVersion>
         <Nullable>disable</Nullable>
         <PackageId>Re.MediatR</PackageId>
-        <Version>12.1.0</Version>
+        <Version>12.2.0</Version>
         <Authors>David Vercruyssen</Authors>
         <Company>Aranea</Company>
+        <Description>Exposes MediatR requests through a single HTTP endpoint (POST /mediatr?type=RequestName) for SPA applications.</Description>
         <PackageProjectUrl>https://github.com/davidcruy/Re.MediatR</PackageProjectUrl>
         <RepositoryUrl>https://github.com/davidcruy/Re.MediatR.git</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReleaseNotes>12.2.0: non-generic IRequest types are exposed; ConfigureJson option (web defaults incl. AllowReadingFromString); application/json content type; cancellation token passed to IMediator.Send; 400 for unknown/missing type.</PackageReleaseNotes>
 
         <RepositoryType>Git</RepositoryType>
         <RootNamespace>ReMediatR</RootNamespace>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);CS1591</NoWarn>
 
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <IncludeSymbols>true</IncludeSymbols>
@@ -23,7 +27,7 @@
 
     <ItemGroup>
       <PackageReference Include="MediatR" Version="12.5.0" />
-      <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
+      <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
     <ItemGroup>
